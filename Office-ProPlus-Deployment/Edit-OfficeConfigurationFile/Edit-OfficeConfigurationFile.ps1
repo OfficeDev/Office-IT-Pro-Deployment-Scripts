@@ -3683,100 +3683,172 @@ function ConvertBranchNameToChannelName {
 }
 
 function Change-UpdatePathToChannel {
-    [CmdletBinding()]
-    param( 
-        [Parameter()]
-        [string] $UpdatePath,
-     
-        [Parameter()]
-        [String] $Channel,
+   [CmdletBinding()]
+   param( 
+     [Parameter()]
+     [string] $UpdatePath,
 
-        [Parameter()]
-        [string]$LogFilePath
-    )
+     [Parameter()]
+     [bool] $ValidateUpdateSourceFiles = $true,
 
-    Set-Alias -name LINENUM -value Get-CurrentLineNumber
-    $currentFileName = Get-CurrentFileName
+     [Parameter()]
+     [string] $Channel = $null,
 
-    $newUpdatePath = $UpdatePath
+     [Parameter()]
+     [string] $Bitness = $null
+   )
 
-    $branchShortName = "DC"
-    if ($Channel.ToString().ToLower() -eq "current") {
-       $branchShortName = "CC"
-    }
-    if ($Channel.ToString().ToLower() -eq "firstreleasecurrent") {
-       $branchShortName = "FRCC"
-    }
-    if ($Channel.ToString().ToLower() -eq "firstreleasedeferred") {
-       $branchShortName = "FRDC"
-    }
-    if ($Channel.ToString().ToLower() -eq "deferred") {
-       $branchShortName = "DC"
-    }
-    if ($Channel.ToString().ToLower() -eq "monthlytargeted") {
-       $branchShortName = "MTC"
-    }
-    if ($Channel.ToString().ToLower() -eq "monthly") {
-       $branchShortName = "MC"
-    }
-    if ($Channel.ToString().ToLower() -eq "semiannualtargeted") {
-       $branchShortName = "SATC"
-    }
-    if ($Channel.ToString().ToLower() -eq "semiannual") {
-       $branchShortName = "SAC"
-    }
+   $newUpdatePath = $UpdatePath
+   $newUpdateLong = $UpdatePath
 
-    $channelNames = @("FRCC", "CC", "FRDC", "DC", "MTC", "MC", "SATC", "SAC")
+   if (!($Channel)) {
+      $detectedChannel = Detect-Channel 
+   }
 
-    $madeChange = $false
-    foreach ($channelName in $channelNames) {
-       if ($UpdatePath.ToUpper().EndsWith("\$channelName")) {
-          $newUpdatePath = $newUpdatePath -replace "\\$channelName", "\$branchShortName"
-          $madeChange = $true
-       } 
-       if ($UpdatePath.ToUpper().Contains("\$channelName\")) {
-          $newUpdatePath = $newUpdatePath -replace "\\$channelName\\", "\$branchShortName\"
-          $madeChange = $true
-       } 
-       if ($UpdatePath.ToUpper().EndsWith("/$channelName")) {
-          $newUpdatePath = $newUpdatePath -replace "\/$channelName", "/$branchShortName"
-          $madeChange = $true
-       }
-       if ($UpdatePath.ToUpper().Contains("/$channelName/")) {
-          $newUpdatePath = $newUpdatePath -replace "\/$channelName\/", "/$branchShortName/"
-          $madeChange = $true
-       }
-    }
+   if ($detectedChannel) {
+       $branchName = $detectedChannel.branch
+   } else {
+      if ($Channel) {
+         $branchName = $Channel
+      } else {
+         $branchName = "SemiAnnual"
+      }
+   }
 
-    if (!($madeChange)) {
-       if ($newUpdatePath.Contains("/")) {
-          if ($newUpdatePath.EndsWith("/")) {
-            $newUpdatePath += "$branchShortName"
-          } else {
-            $newUpdatePath += "/$branchShortName"
-          }
-       }
-       if ($newUpdatePath.Contains("\")) {
-          if ($newUpdatePath.EndsWith("\")) {
-            $newUpdatePath += "$branchShortName"
-          } else {
-            $newUpdatePath += "\$branchShortName"
-          }
-       }
-    }
+   $branchShortName = "DC"
+   if ($branchName.ToLower() -eq "current") {
+      $branchShortName = "CC"
+   }
+   if ($branchName.ToLower() -eq "firstreleasecurrent") {
+      $branchShortName = "FRCC"
+   }
+   if ($branchName.ToLower() -eq "firstreleasedeferred") {
+      $branchShortName = "FRDC"
+   }
+   if ($branchName.ToLower() -eq "deferred") {
+      $branchShortName = "DC"
+   }
+   if ($branchName.ToLower() -eq "monthlytargeted") {
+      $branchShortName = "MTC"
+   }
+   if ($branchName.ToLower() -eq "monthly") {
+      $branchShortName = "MC"
+   }
+   if ($branchName.ToLower() -eq "semiannualtargeted") {
+      $branchShortName = "SATC"
+   }
+   if ($branchName.ToLower() -eq "semiannual") {
+      $branchShortName = "SAC"
+   }
 
-    try {
-        $pathAlive = Test-UpdateSource -UpdateSource $newUpdatePath
-        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "pathAlive set to $pathAlive" -LogFilePath $LogFilePath
-    } catch {
-        $pathAlive = $false
-    }
-    
-    if ($pathAlive) {    
-        return $newUpdatePath
-    } else {    
-        return $UpdatePath
-    }
+   $channelNames = @("FRCC", "CC", "FRDC", "DC", "MTC", "MC", "SATC", "SAC")
+   $channelLongNames = @("FirstReleaseCurrent", "Current", "FirstReleaseDeferred", "Deferred", "Business", "FirstReleaseBusiness",
+                         "MonthlyTargeted", "Monthly", "SemiAnnualTargeted", "SemiAnnual")
+
+   $madeChange = $false
+   foreach ($channelName in $channelNames) {
+      if ($UpdatePath.ToUpper().EndsWith("\$channelName")) {
+         $newUpdatePath = $newUpdatePath -replace "\\$channelName", "\$branchShortName"
+         $newUpdateLong = $newUpdateLong -replace "\\$channelName", "\$branchName"
+         $madeChange = $true
+      } 
+      if ($UpdatePath.ToUpper().Contains("\$channelName\")) {
+         $newUpdatePath = $newUpdatePath -replace "\\$channelName\\", "\$branchShortName\"
+         $newUpdateLong = $newUpdateLong -replace "\\$channelName\\", "\$branchName\"
+         $madeChange = $true
+      } 
+      if ($UpdatePath.ToUpper().EndsWith("/$channelName")) {
+         $newUpdatePath = $newUpdatePath -replace "\/$channelName", "/$branchShortName"
+         $newUpdateLong = $newUpdateLong -replace "\\$channelName\\", "\$branchName\"
+         $madeChange = $true
+      }
+      if ($UpdatePath.ToUpper().Contains("/$channelName/")) {
+         $newUpdatePath = $newUpdatePath -replace "\/$channelName\/", "/$branchShortName/"
+         $newUpdateLong = $newUpdateLong -replace "\/$channelName\/", "/$branchName/"
+         $madeChange = $true
+      }
+   }
+
+   foreach ($channelName in $channelLongNames) {
+      $channelName = $channelName.ToString().ToUpper()
+      if ($UpdatePath.ToUpper().EndsWith("\$channelName")) {
+         $newUpdatePath = $newUpdatePath -replace "\\$channelName", "\$branchShortName"
+         $newUpdateLong = $newUpdateLong -replace "\\$channelName", "\$branchName"
+         $madeChange = $true
+      } 
+      if ($UpdatePath.ToUpper().Contains("\$channelName\")) {
+         $newUpdatePath = $newUpdatePath -replace "\\$channelName\\", "\$branchShortName\"
+         $newUpdateLong = $newUpdateLong -replace "\\$channelName\\", "\$branchName\"
+         $madeChange = $true
+      } 
+      if ($UpdatePath.ToUpper().EndsWith("/$channelName")) {
+         $newUpdatePath = $newUpdatePath -replace "\/$channelName", "/$branchShortName"
+         $newUpdateLong = $newUpdateLong -replace "\\$channelName\\", "\$branchName\"
+         $madeChange = $true
+      }
+      if ($UpdatePath.ToUpper().Contains("/$channelName/")) {
+         $newUpdatePath = $newUpdatePath -replace "\/$channelName\/", "/$branchShortName/"
+         $newUpdateLong = $newUpdateLong -replace "\/$channelName\/", "/$branchName/"
+         $madeChange = $true
+      }
+   }
+
+   if (!($madeChange)) {
+      if ($newUpdatePath.Contains("/")) {
+         if ($newUpdatePath.EndsWith("/")) {
+           $newUpdatePath += "$branchShortName"
+         } else {
+           $newUpdatePath += "/$branchShortName"
+         }
+      }
+      if ($newUpdatePath.Contains("\")) {
+         if ($newUpdatePath.EndsWith("\")) {
+           $newUpdatePath += "$branchShortName"
+         } else {
+           $newUpdatePath += "\$branchShortName"
+         }
+      }
+   }
+
+   if (!($madeChange)) {
+      if ($newUpdateLong.Contains("/")) {
+         if ($newUpdateLong.EndsWith("/")) {
+           $newUpdateLong += "$branchName"
+         } else {
+           $newUpdateLong += "/$branchName"
+         }
+      }
+      if ($newUpdateLong.Contains("\")) {
+         if ($newUpdateLong.EndsWith("\")) {
+           $newUpdateLong += "$branchName"
+         } else {
+           $newUpdateLong += "\$branchName"
+         }
+      }
+   }
+
+   try {
+     $pathAlive = Test-UpdateSource -UpdateSource $newUpdatePath -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles -Bitness $Bitness
+   } catch {
+     $pathAlive = $false
+   }
+
+     if (!($pathAlive)) {
+        try {
+           $pathAlive = Test-UpdateSource -UpdateSource $newUpdateLong -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles -Bitness $Bitness
+        } catch {
+            $pathAlive = $false
+        }
+        if ($pathAlive) {
+           $newUpdatePath = $newUpdateLong
+        }
+     }
+   
+   if ($pathAlive) {
+     return $newUpdatePath
+   } else {
+     return $UpdatePath
+   }
 }
 
 Function Test-UpdateSource() {
