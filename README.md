@@ -62,3 +62,6 @@ This is high level plan for contributing and the structure that we have in place
 <LI>All issues will be reviewed and prioritized each day as we work to add new scripts and improve existing ones</UL>
 </UL>
 [![Analytics](https://ga-beacon.appspot.com/UA-70271323-4/Main_Readme?pixel)](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts)
+
+
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information, see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
