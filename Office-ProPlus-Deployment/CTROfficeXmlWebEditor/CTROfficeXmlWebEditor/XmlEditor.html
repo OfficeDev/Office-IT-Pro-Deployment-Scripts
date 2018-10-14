@@ -1,4 +1,4 @@
-<!-- Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See LICENSE in the project root for license information. -->
+﻿<!-- Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See LICENSE in the project root for license information. -->
 
 <!doctype html>
 <html lang="en">
@@ -293,17 +293,6 @@
                                         </div>
                                         <div id="templatesRow" class="ms-Table-row navrow">
                                             <span class="ms-Table-cell" onclick="setPanel('TemplatesPanel', 'templatesRow')">Templates</span>
-                                        </div>
-                                    </div>
-
-                                    <br />
-
-                                    <div class="ms-Table">
-                                        <div class="ms-Table-row">
-                                            <span class="ms-font-xl">Tools</span>
-                                        </div>
-                                        <div id="installRow" class="ms-Table-row navrow">
-                                            <span class="ms-Table-cell" onclick="setPanel('GenerateInstallPanel', 'installRow')">Install Toolkit</span>
                                         </div>
                                     </div>
 
@@ -1392,127 +1381,118 @@
         </div>
     </div>
 
-    <div id="welcomeDialog" class="ms-Dialog" style="position:fixed;width:100%;height:90%;display:none">
-        <div id="welcomeMain" class="ms-Dialog-main" style="width: 90%; height: 90%; max-width: 1200px;">
-            <div id="welcomeHeader" class="ms-Dialog-header ms-bgColor-themeDark ms-bgColor-themeSecondary ms-fontColor-white">
-                <i id="dialogNext" class="ms-Icon ms-Icon--arrowRight" style="float: right; height: 10px; font-size: 20px; cursor: pointer;" onclick="dialogNext()"></i>
-                <i id="dialogBack" class="ms-Icon ms-Icon--arrowLeft" style="float: right; height: 10px; font-size: 20px; cursor: pointer;display:none" onclick="dialogBack()"></i>
+<div id="welcomeDialog" class="ms-Dialog" style="position:fixed;width:100%;height:90%;display:none">
+    <div id="welcomeMain" class="ms-Dialog-main" style="width: 90%; height: 90%; max-width: 1200px;">
+        <div id="welcomeHeader" class="ms-Dialog-header ms-bgColor-themeDark ms-bgColor-themeSecondary ms-fontColor-white">
+            <!--<i id="dialogNext" class="ms-Icon ms-Icon--arrowRight" style="float: right; height: 10px; font-size: 20px; cursor: pointer;" onclick="dialogNext()"></i>
+            <i id="dialogBack" class="ms-Icon ms-Icon--arrowLeft" style="float: right; height: 10px; font-size: 20px; cursor: pointer;display:none" onclick="dialogBack()"></i>-->
 
-                <p class="ms-Dialog-title" style="width: 90%; padding-left: 20px; margin-right: auto">
-                    Welcome to the Office Click-To-Run Configuration XML Editor
-                </p>
-            </div>
-            <div id="welcomeInner" class="ms-Dialog-inner" style="overflow-y: auto; height: auto; max-height: 90%">
-                <div class="ms-Dialog-content" style="width: 98%; padding-left: 20px; padding-top: 20px; height: 100%">
-                    <div id="disclaimer">
-                        <p class="ms-font-l ms-fontWeight-semibold">
-                            <img src="images/Warning64.png" alt="Warning" />
-                            ALERT: New Version of the Office Deployment Tool (ODT)
-                        <p class="ms-font-m">
-                            The latest version of the Office Deployment Tool (ODT) now supports using the Channel parameter in the configuration XML. This site will now use
-                            the Channel parameter instead of Branch. Previous versions of the Office Deployment Tool (ODT) will not recognize the Channel parameter and will
-                            ignore it and default to Deferred channel. To avoid this issue you must download and use the latest version of ODT.
-                            <br /><br />
-                            <a style="cursor:pointer" onclick="OpenInNewTab('https://www.microsoft.com/en-us/download/details.aspx?id=49117')">Office Deployment Tool (2016)</a>
-                        </p>
-                        </p>
-                        <hr />
-                        <p class="ms-font-l ms-fontWeight-semibold">
-                            Updated Branch Names
-                        <p class="ms-font-m">Based on customer feedback, we’ve changed how we refer to our update branches. The name changes are as follows:</p>
-                        <ul class="ms-font-m">
-                            <li>Current Branch is now called <strong>Current Channel</strong></li>
-                            <li>Current Branch for Business is now called <strong>Deferred Channel</strong></li>
-                            <li>First Release for Current Branch is now called <strong>First Release for Current Channel</strong></li>
-                            <li>First Release for Current Branch for Business is now called <strong>First Release for Deferred Channel</strong></li>
-                        </ul>
-                        </p>
-
-                        <div class="ms-Dialog-actions" style="width: 98%; margin-right: 30px; bottom: 20px; position: absolute">
-                            <div class="ms-Dialog-actionsRight">
-                                <button class="ms-Dialog-action ms-Button" onclick="hideWelcome();">
-                                    <span class="ms-Button-label">Close</span>
-                                </button>
-                                <button class="ms-Dialog-action ms-Button" onclick="dialogNext()">
-                                    <span class="ms-Button-label">Next</span>
-                                </button>
-                            </div>
+            <p class="ms-Dialog-title" style="width: 90%; padding-left: 20px; margin-right: auto">
+                Welcome to the Office Click-To-Run Configuration XML Editor
+            </p>
+        </div>
+        <div id="welcomeInner" class="ms-Dialog-inner" style="overflow-y: auto; height: auto; max-height: 90%">
+            <div class="ms-Dialog-content" style="width: 98%; padding-left: 20px; padding-top: 20px; height: 100%">
+                <div id="disclaimer">
+                    <p class="ms-font-l ms-fontWeight-semibold">
+                        <img src="images/Warning64.png" alt="Warning" />
+                        ALERT: Microsoft releases the new Office Customization Tool for Click-to-Run
+                    <p class="ms-font-m">
+                        Microsoft released a new web application that enables desktop administrators to customize the deployment of Office 365 applications.  With this the new Office
+                        Customization Tool, desktop admins can leverage a rich user interface that helps easily configure deployment options to build the desired Office configurations.
+                        <br /><br />
+                        The Office Click-to-Run Configuration XML hosted on GitHub has been retired
+                        <br /><br />
+                        <a style="cursor:pointer" onclick="OpenInNewTab('https://config.office.com')">Click here to use the Office Customization Tool for Click-To-Run</a>
+                    </p>
+                    </p>
+                    <hr />
+                    <div class="ms-Dialog-actions" style="width: 98%; margin-right: 30px; bottom: 20px; position: absolute">
+                        <div class="ms-Dialog-actionsRight">
+                            <!--<button class="ms-Dialog-action ms-Button" onclick="hideWelcome();">
+                                <span class="ms-Button-label">Close</span>
+                            </button>
+                            <button class="ms-Dialog-action ms-Button" onclick="dialogNext()">
+                                <span class="ms-Button-label">Next</span>
+                            </button>-->
                         </div>
                     </div>
+                </div>
 
-                    <div id="info" style="display: none;">
-                        <p class="ms-font-m">
-                            This page provides a graphical method to generate and edit the Office Click-to-Run configuration.xml file. The configuration.xml file is used to specify Click-to-Run installation and update options.
-                        </p>
-                        <br />
-                        <p class="ms-font-m">
-                            <a style="cursor:pointer" onclick="OpenInNewTab('https://technet.microsoft.com/en-us/library/JJ219426.aspx')">Reference for Click-to-Run configuration.xml file</a>
-                        </p>
-                        <br />
-                        <p class="ms-font-m">
-                            The <a style="cursor:pointer" onclick="OpenInNewTab('https://technet.microsoft.com/en-us/library/jj219422.aspx')" id="A_2">Office Deployment Tool</a> is a downloadable tool.
-                            (<a style="cursor:pointer" onclick="OpenInNewTab('https://www.microsoft.com/en-us/download/details.aspx?id=49117')">Office 365 ProPlus 2016</a>,
-                            <a style="cursor:pointer" onclick="OpenInNewTab('http://www.microsoft.com/en-us/download/details.aspx?id=36778')">Office 365 ProPlus 2013</a>)
-                        </p>
-                        <br />
-                        <hr />
-                        <p class="ms-font-xl" style="margin-top: 10px">How to use this site</p>
+                <div id="info" style="display: none;">
+                    <p class="ms-font-m">
+                        This page provides a graphical method to generate and edit the Office Click-to-Run configuration.xml file. The configuration.xml file is used to specify Click-to-Run installation and update options.
+                    </p>
+                    <br />
+                    <p class="ms-font-m">
+                        <a style="cursor:pointer" onclick="OpenInNewTab('https://technet.microsoft.com/en-us/library/JJ219426.aspx')">Reference for Click-to-Run configuration.xml file</a>
+                    </p>
+                    <br />
+                    <p class="ms-font-m">
+                        The <a style="cursor:pointer" onclick="OpenInNewTab('https://technet.microsoft.com/en-us/library/jj219422.aspx')" id="A_2">Office Deployment Tool</a> is a downloadable tool.
+                        (<a style="cursor:pointer" onclick="OpenInNewTab('https://www.microsoft.com/en-us/download/details.aspx?id=49117')">Office 365 ProPlus 2016</a>,
+                        <a style="cursor:pointer" onclick="OpenInNewTab('http://www.microsoft.com/en-us/download/details.aspx?id=36778')">Office 365 ProPlus 2013</a>)
+                    </p>
+                    <br />
+                    <hr />
+                    <p class="ms-font-xl" style="margin-top: 10px">How to use this site</p>
 
-                        <p class="ms-font-l" style="margin-top: 10px">Start</p>
-                        <p class="ms-font-m">
-                            <ul class="ms-font-m">
-                                <li>Start a new configuration XML</li>
-                                <li>Upload an existing XML file</li>
-                                <li>Select an available Template</li>
-                            </ul>
-                        </p>
+                    <p class="ms-font-l" style="margin-top: 10px">Start</p>
+                    <p class="ms-font-m">
+                        <ul class="ms-font-m">
+                            <li>Start a new configuration XML</li>
+                            <li>Upload an existing XML file</li>
+                            <li>Select an available Template</li>
+                        </ul>
+                    </p>
 
-                        <br />
+                    <br />
 
-                        <p class="ms-font-l" style="margin-top: 10px">Configure</p>
-                        <p class="ms-font-m">
-                            <ul class="ms-font-m">
-                                <li>Add or Remote Office Products</li>
-                                <li>Configure Updates</li>
-                                <li>Control installation behavior</li>
-                            </ul>
-                        </p>
+                    <p class="ms-font-l" style="margin-top: 10px">Configure</p>
+                    <p class="ms-font-m">
+                        <ul class="ms-font-m">
+                            <li>Add or Remote Office Products</li>
+                            <li>Configure Updates</li>
+                            <li>Control installation behavior</li>
+                        </ul>
+                    </p>
 
-                        <br />
+                    <br />
 
-                        <p class="ms-font-l" style="margin-top: 10px">Save</p>
-                        <p class="ms-font-m">
-                            <ul class="ms-font-m">
-                                <li>Download the file,
-                                <li>Email it
-                                <li>Copy the text to save it.</li>
-                            </ul>
-                        </p>
+                    <p class="ms-font-l" style="margin-top: 10px">Save</p>
+                    <p class="ms-font-m">
+                        <ul class="ms-font-m">
+                            <li>Download the file,
+                            <li>Email it
+                            <li>Copy the text to save it.</li>
+                        </ul>
+                    </p>
 
-                        <hr />
+                    <hr />
 
-                        <p class="ms-font-m">
-                            For more scripts and tools for automating Office ProPlus deployments you can go to the <a style="cursor:pointer" onclick="OpenInNewTab('https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts')" id="A_2">Office IT Pro Deployment Scripts</a>
-                            respository in the <a style="cursor:pointer" onclick="OpenInNewTab('https://github.com/OfficeDev')" id="A_2">OfficeDev</a> GitHub Site.
+                    <p class="ms-font-m">
+                        For more scripts and tools for automating Office ProPlus deployments you can go to the <a style="cursor:pointer" onclick="OpenInNewTab('https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts')" id="A_2">Office IT Pro Deployment Scripts</a>
+                        respository in the <a style="cursor:pointer" onclick="OpenInNewTab('https://github.com/OfficeDev')" id="A_2">OfficeDev</a> GitHub Site.
 
 
-                        </p>
+                    </p>
 
-                        <div class="ms-Dialog-actions" style="width: 98%; margin-right: 30px; bottom: 20px; position: absolute">
-                            <div class="ms-Dialog-actionsRight">
-                                <button class="ms-Dialog-action ms-Button" onclick="foreverHideWelcome();">
-                                    <span class="ms-Button-label">Don't Show This Again</span>
-                                </button>
-                                <button class="ms-Dialog-action ms-Button" onclick="hideWelcome();">
-                                    <span class="ms-Button-label">Close</span>
-                                </button>
-                            </div>
+                    <div class="ms-Dialog-actions" style="width: 98%; margin-right: 30px; bottom: 20px; position: absolute">
+                        <div class="ms-Dialog-actionsRight">
+                           <!-- <button class="ms-Dialog-action ms-Button" onclick="foreverHideWelcome();">
+                                <span class="ms-Button-label">Don't Show This Again</span>
+                            </button>
+                            <button class="ms-Dialog-action ms-Button" onclick="hideWelcome();">
+                                <span class="ms-Button-label">Close</span>
+                            </button> -->
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
+
     <div id="commentDialog" class="ms-Dialog" style="display:none;position:fixed;width:100%;top:-100%">
         <div class="ms-Overlay"></div>
         <div class="ms-Dialog-main" style="min-width:50%">
