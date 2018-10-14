@@ -920,7 +920,7 @@ function GetVersionData() {
             changeVersions("2016");
         },
         error: function() {
-             alert('error');
+             /* alert('error GetVersionData');*/
         }
     });
 }

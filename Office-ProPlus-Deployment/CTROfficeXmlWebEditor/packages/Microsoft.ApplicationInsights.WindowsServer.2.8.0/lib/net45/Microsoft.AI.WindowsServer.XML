@@ -1,0 +1,1505 @@
+<?xml version="1.0"?>
+<doc xml:lang="en">
+    <assembly>
+        <name>Microsoft.AI.WindowsServer</name>
+    </assembly>
+    <members>
+        <member name="T:Microsoft.ApplicationInsights.WindowsServer.AzureRoleEnvironmentTelemetryInitializer">
+            <summary>
+            A telemetry initializer that will gather Azure Role Environment context information.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.AzureRoleEnvironmentTelemetryInitializer.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.ApplicationInsights.WindowsServer.AzureRoleEnvironmentTelemetryInitializer" /> class.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.AzureRoleEnvironmentTelemetryInitializer.Initialize(Microsoft.ApplicationInsights.Channel.ITelemetry)">
+            <summary>
+            Initializes <see cref="T:Microsoft.ApplicationInsights.Channel.ITelemetry" /> device context.
+            </summary>
+            <param name="telemetry">The telemetry to initialize.</param>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.AzureRoleEnvironmentTelemetryInitializer.IsAppRunningInAzureWebApp">
+            <summary>
+            Searches for the environment variable specific to Azure web applications and confirms if the current application is a web application or not.
+            </summary>
+            <returns>Boolean, which is true if the current application is an Azure web application.</returns>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.WindowsServer.DeviceTelemetryInitializer">
+            <summary>
+            A telemetry context initializer that will gather device context information.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.DeviceTelemetryInitializer.Initialize(Microsoft.ApplicationInsights.Channel.ITelemetry)">
+            <summary>
+            Populates device properties on a telemetry item.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.WindowsServer.FirstChanceExceptionStatisticsTelemetryModule">
+            <summary>
+            The module subscribed to AppDomain.CurrentDomain.FirstChanceException to send exceptions statistics to ApplicationInsights.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.FirstChanceExceptionStatisticsTelemetryModule.executionSyncObject">
+            <summary>
+            This object prevents double entry into the exception callback.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.FirstChanceExceptionStatisticsTelemetryModule.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.ApplicationInsights.WindowsServer.FirstChanceExceptionStatisticsTelemetryModule" /> class.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.FirstChanceExceptionStatisticsTelemetryModule.Initialize(Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration)">
+            <summary>
+            Initializes the telemetry module.
+            </summary>
+            <param name="configuration">Telemetry Configuration used for creating TelemetryClient for sending exception statistics to Application Insights.</param>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.FirstChanceExceptionStatisticsTelemetryModule.Dispose">
+            <summary>
+            Disposing TaskSchedulerOnUnobservedTaskException instance. This class doesn't have the finalize method as we expect it 
+            live for a duration of the process and be disposed by AI infrastructure.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.FirstChanceExceptionStatisticsTelemetryModule.Dispose(System.Boolean)">
+            <summary>
+            IDisposable implementation.
+            </summary>
+            <param name="disposing">The method has been called directly or indirectly by a user's code.</param>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.Implementation.AzureRoleEnvironmentContextReader.instance">
+            <summary>
+            The singleton instance for our reader.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.Implementation.AzureRoleEnvironmentContextReader.roleName">
+            <summary>
+            The Azure role name (if any).
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.Implementation.AzureRoleEnvironmentContextReader.roleInstanceName">
+            <summary>
+            The Azure role instance name (if any).
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.AzureRoleEnvironmentContextReader.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.ApplicationInsights.WindowsServer.Implementation.AzureRoleEnvironmentContextReader"/> class.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ApplicationInsights.WindowsServer.Implementation.AzureRoleEnvironmentContextReader.Instance">
+            <summary>
+            Gets or sets the singleton instance for our application context reader.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.AzureRoleEnvironmentContextReader.Initialize">
+            <summary>
+            Initializes the current reader with respect to its environment.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.AzureRoleEnvironmentContextReader.GetRoleName">
+            <summary>
+            Gets the Azure role name.
+            </summary>
+            <returns>The extracted data.</returns>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.AzureRoleEnvironmentContextReader.GetRoleInstanceName">
+            <summary>
+            Gets the Azure role instance name.
+            </summary>
+            <returns>The extracted data.</returns>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.WindowsServer.Implementation.AzureServiceRuntimeAssemblyLoader">
+            <summary>
+            Contains logic to load AzureServiceRuntime assembly and read context using reflection.
+            Inherits MarshalByRefObject so that methods of this class can be executed remotely in separate AppDomain.
+            </summary>    
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.WindowsServer.Implementation.DeviceContextReader">
+            <summary>
+            The reader is platform specific and applies to .NET applications only.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ApplicationInsights.WindowsServer.Implementation.DeviceContextReader.Instance">
+            <summary>
+            Gets or sets the singleton instance for our application context reader.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.DeviceContextReader.GetHostSystemLocale">
+            <summary>
+            Gets the host system locale.
+            </summary>
+            <returns>The discovered locale.</returns>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.DeviceContextReader.GetDeviceType">
+            <summary>
+            Gets the type of the device.
+            </summary>
+            <returns>The type for this device as a hard-coded string.</returns>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.DeviceContextReader.GetDeviceUniqueId">
+            <summary>
+            Gets the device unique ID, or uses the fallback if none is available due to application configuration.
+            </summary>
+            <returns>
+            The discovered device identifier.
+            </returns>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.DeviceContextReader.GetOemName">
+            <summary>
+            Gets the device OEM.
+            </summary>
+            <returns>The discovered OEM.</returns>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.DeviceContextReader.GetDeviceModel">
+            <summary>
+            Gets the device model.
+            </summary>
+            <returns>The discovered device model.</returns>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.DeviceContextReader.GetNetworkType">
+            <summary>
+            Gets the network type.
+            </summary>
+            <returns>The discovered network type.</returns>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.DeviceContextReader.RunWmiQuery(System.String,System.String,System.String)">
+            <summary>
+            Runs a single WMI query for a property.
+            </summary>
+            <param name="table">The table.</param>
+            <param name="property">The property.</param>
+            <param name="defaultValue">The default value of the property if WMI fails.</param>
+            <returns>The value if found, Unknown otherwise.</returns>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.WindowsServer.Implementation.IAzureRoleEnvironmentContextReader">
+            <summary>
+            The user context reader interface used while reading user related information in a platform specific way.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.IAzureRoleEnvironmentContextReader.Initialize">
+            <summary>
+            Initializes the current reader with respect to its environment.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.IAzureRoleEnvironmentContextReader.GetRoleName">
+            <summary>
+            Gets the Azure role name.
+            </summary>
+            <returns>The extracted data.</returns>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.IAzureRoleEnvironmentContextReader.GetRoleInstanceName">
+            <summary>
+            Gets the Azure role instance name.
+            </summary>
+            <returns>The extracted data.</returns>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.WindowsServer.Implementation.Role">
+            <summary>
+            Represents a role that is defined as part of a hosted service. 
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.Role.#ctor(System.Object,System.Reflection.Assembly)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.ApplicationInsights.WindowsServer.Implementation.Role"/> class.
+            </summary>
+            <param name="targetObject">The target object.</param>
+            <param name="loadedAssembly">The loaded assembly.</param>
+        </member>
+        <member name="P:Microsoft.ApplicationInsights.WindowsServer.Implementation.Role.Name">
+            <summary>
+            Gets the name of the role as it is declared in the service definition file.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.Role.GetTargetObjectInstance(System.Type,System.Object[])">
+            <summary>
+            Gets the target object instance.
+            </summary>
+            <param name="targetType">Type of the target.</param>
+            <param name="activationArgs">The activation arguments.</param>
+            <returns>
+            The activated instance is one is required.
+            </returns>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.WindowsServer.Implementation.RoleEnvironment">
+            <summary>
+            Provides information about the configuration, endpoints, and status of running role instances. 
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.RoleEnvironment.#ctor(System.Reflection.Assembly)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.ApplicationInsights.WindowsServer.Implementation.RoleEnvironment"/> class.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ApplicationInsights.WindowsServer.Implementation.RoleEnvironment.IsAvailable">
+            <summary>
+            Gets a value indicating whether the role instance is running in the Windows Azure environment. 
+            </summary>
+        </member>
+        <member name="P:Microsoft.ApplicationInsights.WindowsServer.Implementation.RoleEnvironment.DeploymentId">
+            <summary>
+            Gets the unique identifier of the deployment in which the role instance is running. 
+            </summary>
+        </member>
+        <member name="P:Microsoft.ApplicationInsights.WindowsServer.Implementation.RoleEnvironment.CurrentRoleInstance">
+            <summary>
+            Gets a RoleInstance object that represents the role instance in which the code is currently running. 
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.RoleEnvironment.GetTargetObjectInstance(System.Type,System.Object[])">
+            <summary>
+            Gets the target object instance.
+            </summary>
+            <param name="targetType">Type of the target.</param>
+            <param name="activationArgs">The activation arguments.</param>
+            <returns>
+            The activated instance is one is required.
+            </returns>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.WindowsServer.Implementation.RoleInstance">
+            <summary>
+            Represents an instance of a role. 
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.RoleInstance.#ctor(System.Object,System.Reflection.Assembly)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.ApplicationInsights.WindowsServer.Implementation.RoleInstance"/> class.
+            </summary>
+            <param name="targetObject">The target object.</param>
+            <param name="loadedAssembly">The loaded assembly.</param>
+        </member>
+        <member name="P:Microsoft.ApplicationInsights.WindowsServer.Implementation.RoleInstance.Id">
+            <summary>
+            Gets the instance identifier (ID) of the role instance.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ApplicationInsights.WindowsServer.Implementation.RoleInstance.Role">
+            <summary>
+            Gets the Role object that is associated with the role instance.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.RoleInstance.GetTargetObjectInstance(System.Type,System.Object[])">
+            <summary>
+            Gets the target object instance.
+            </summary>
+            <param name="targetType">Type of the target.</param>
+            <param name="activationArgs">The activation arguments.</param>
+            <returns>
+            The activated instance is one is required.
+            </returns>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.WindowsServer.Implementation.RuntimeBindingObject">
+            <summary>
+            A runtime bound object for a given .NET type.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.Implementation.RuntimeBindingObject.targetType">
+            <summary>
+            The target type for our object.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.Implementation.RuntimeBindingObject.targetObject">
+            <summary>
+            The target object.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.Implementation.RuntimeBindingObject.loadedAssembly">
+            <summary>
+            The assembly which is loaded reflectively.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.RuntimeBindingObject.#ctor(System.Type,System.Reflection.Assembly,System.Object[])">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.ApplicationInsights.WindowsServer.Implementation.RuntimeBindingObject"/> class.
+            </summary>
+            <param name="targetType">Type of the target.</param>
+            <param name="loadedAssembly">The loaded assembly.</param>
+            <param name="activationArgs">The activation arguments.</param>
+        </member>
+        <member name="P:Microsoft.ApplicationInsights.WindowsServer.Implementation.RuntimeBindingObject.TargetType">
+            <summary>
+            Gets or sets the type of the target.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ApplicationInsights.WindowsServer.Implementation.RuntimeBindingObject.TargetObject">
+            <summary>
+            Gets or sets the target object.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ApplicationInsights.WindowsServer.Implementation.RuntimeBindingObject.LoadedAssembly">
+            <summary>
+            Gets or sets the loaded assembly.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.RuntimeBindingObject.GetTargetObjectInstance(System.Type,System.Object[])">
+            <summary>
+            Gets the target object instance.
+            </summary>
+            <param name="targetType">Type of the target.</param>
+            <param name="activationArgs">The activation arguments.</param>
+            <returns>The activated instance is one is required.</returns>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.RuntimeBindingObject.GetProperty(System.String,System.Object[])">
+            <summary>
+            Gets the property.
+            </summary>
+            <param name="name">The name.</param>
+            <param name="args">The arguments.</param>
+            <returns>The value for our property.</returns>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.RuntimeBindingObject.GetProperty(System.String,System.Type[],System.Object[])">
+            <summary>
+            Gets the property.
+            </summary>
+            <param name="name">The name.</param>
+            <param name="parameterTypes">The parameter types.</param>
+            <param name="args">The arguments.</param>
+            <returns>The value for our property.</returns>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.RuntimeBindingObject.GetProperty(System.String,System.Reflection.BindingFlags,System.Type[],System.Object[])">
+            <summary>
+            Gets the property.
+            </summary>
+            <param name="name">The name.</param>
+            <param name="bindingFlags">The binding flags.</param>
+            <param name="parameterTypes">The parameter types.</param>
+            <param name="args">The arguments.</param>
+            <returns>The value for our property.</returns>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.RuntimeBindingObject.InvokeHelper(System.String,System.Reflection.BindingFlags,System.Object[],System.Globalization.CultureInfo)">
+            <summary>
+            Invocation helper for calling any member on our target object.
+            </summary>
+            <param name="name">The name.</param>
+            <param name="bindingFlags">The binding flags.</param>
+            <param name="args">The arguments.</param>
+            <param name="culture">The culture.</param>
+            <returns>The return value for our invocation.</returns>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.WindowsServer.Implementation.ServiceRuntime">
+            <summary>
+            The wrapper for the Azure Service Runtime.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.ServiceRuntime.GetRoleEnvironment">
+            <summary>
+            Gets the role environment.
+            </summary>        
+            <returns>
+            The role environment object.
+            </returns>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.WindowsServer.Implementation.AppServiceEnvironmentVariableMonitor">
+            <summary>
+            Utility to monitor the value of environment variables which may change 
+            during the run of an application. Checks the environment variables 
+            at regular set intervals.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.AppServiceEnvironmentVariableMonitor.#ctor">
+            <summary>
+            Prevents a default instance of the <see cref="T:Microsoft.ApplicationInsights.WindowsServer.Implementation.AppServiceEnvironmentVariableMonitor" /> class from being created.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.Implementation.AzureComputeMetadataHeartbeatPropertyProvider.ExpectedAzureImsFields">
+            <summary>
+            Expected fields extracted from Azure IMS to add to the heartbeat properties. 
+            Set as internal for testing.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.Implementation.AzureComputeMetadataHeartbeatPropertyProvider.isAzureMetadataCheckCompleted">
+            <summary>
+            Flags that will tell us whether or not Azure VM metadata has been attempted to be gathered or not, and
+            if we should even attempt to look for it in the first place. 
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.AzureComputeMetadataHeartbeatPropertyProvider.#ctor(Microsoft.ApplicationInsights.WindowsServer.Implementation.IAzureMetadataRequestor)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.ApplicationInsights.WindowsServer.Implementation.AzureComputeMetadataHeartbeatPropertyProvider"/> class.
+            </summary>
+            <param name="azureInstanceMetadataHandler">For testing: Azure metadata request handler to use when requesting data from azure specifically. If left as null, an instance of AzureMetadataRequestor is used.</param>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.AzureComputeMetadataHeartbeatPropertyProvider.SetDefaultPayloadAsync(Microsoft.ApplicationInsights.Extensibility.Implementation.Tracing.IHeartbeatPropertyManager)">
+            <summary>
+            Add all enabled, present Azure IMS fields to the heartbeat properties.
+            </summary>
+            <param name="provider">Heartbeat provider to set the properties on.</param>
+            <returns>True if any property values were successfully set, false if none were set.</returns>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.Implementation.AzureMetadataRequestor.AzureImsApiVersion">
+            <summary>
+            Azure Instance Metadata Service exists on a single non-routable IP on machines configured
+            by the Azure Resource Manager. See <a href="https://go.microsoft.com/fwlink/?linkid=864683">to learn more.</a>
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.Implementation.AzureMetadataRequestor.AzureImsRequestTimeout">
+            <summary>
+            Default timeout for the web requests made to obtain Azure IMS data. Internal to expose to tests.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.Implementation.AzureMetadataRequestor.azureIMSRequestor">
+            <summary>
+            Private function for mocking out the actual call to IMS in unit tests. Available to internal only.
+            </summary>
+            parameter sent to the func is a string representing the Uri to request Azure IMS data from.
+            <returns>An instance of AzureInstanceComputeMetadata or null.</returns>
+        </member>
+        <member name="P:Microsoft.ApplicationInsights.WindowsServer.Implementation.AzureMetadataRequestor.BaseAimsUri">
+            <summary>
+            Gets or sets the base URI for the Azure Instance Metadata service. Internal to allow overriding in test.
+            </summary>
+            <remarks>
+            At this time, this service does not support https. We should monitor their website for more information. https://docs.microsoft.com/azure/virtual-machines/windows/instance-metadata-service
+            </remarks>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.WindowsServer.Implementation.DataContracts.AzureInstanceComputeMetadata">
+            <summary>
+            Class representing the returned structure from an Azure Instance Metadata request
+            for Compute information.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.DataContracts.AzureInstanceComputeMetadata.VerifyExpectedValue(System.String)">
+            <summary>
+            Because the Azure IMS is on a non-routable IP we need to do some due diligence in our accepting
+            values returned from it. This method takes the fieldname and value received for that field, and
+            if we can test that value against known limitations of that field we do so here. If the test fails
+            we return the empty string, otherwise we return the string given.
+            </summary>
+            <param name="fieldName">Name of the field acquired from the call to Azure IMS.</param>
+            <returns>The value of the field, verified, or the empty string.</returns>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.WindowsServer.Implementation.EnvironmentVariableMonitor">
+            <summary>
+            Utility to monitor the value of environment variables which may change 
+            during the run of an application. Checks the environment variables 
+            intermittently.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.EnvironmentVariableMonitor.#ctor(System.Collections.Generic.IEnumerable{System.String},System.TimeSpan)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.ApplicationInsights.WindowsServer.Implementation.EnvironmentVariableMonitor" /> class.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.EnvironmentVariableMonitor.GetCurrentEnvironmentVariableValue(System.String,System.String@)">
+            <summary>
+            Get the latest value assigned to an environment variable.
+            </summary>
+            <param name="envVarName">Name of the environment variable to acquire.</param>
+            <param name="value">Current cached value of the environment variable.</param>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.EnvironmentVariableMonitor.OnEnvironmentVariableUpdated">
+            <summary>
+            Method to update subscribers whenever a change in the tracked environment variables is detected.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Implementation.EnvironmentVariableMonitor.CheckVariablesIntermittent(System.Object)">
+            <summary>
+            Check and update the variables being tracked and if any updates are detected,
+            raise the OnEnvironmentVariableUpdated event. Restart the timer to check again
+            in the configured interval once complete.
+            </summary>
+            <param name="state">Variable left unused in this implementation of TimerCallback.</param>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.WindowsServer.Implementation.WindowsServerEventSource">
+            <summary>
+            ETW EventSource tracing class.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.Implementation.WindowsServerEventSource.Log">
+            <summary>
+            Instance of the WindowsServerEventSource class.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.WindowsServer.Implementation.WindowsServerEventSource.Keywords">
+            <summary>
+            Keywords for the PlatformEventSource. Those keywords should match keywords in Core.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.Implementation.WindowsServerEventSource.Keywords.UserActionable">
+            <summary>
+            Key word for user actionable events.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.WindowsServer.IMetricProcessor">
+            <summary>
+            Provides functionality to process metric values prior to aggregation.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.IMetricProcessor.Track(Microsoft.ApplicationInsights.WindowsServer.Metric,System.Double)">
+            <summary>
+            Process metric value.
+            </summary>
+            <param name="metric">Metric definition.</param>
+            <param name="value">Metric value.</param>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.WindowsServer.MetricManager">
+            <summary>
+            Metric factory and controller. Sends metrics to Application Insights service. Pre-aggregates metrics to reduce bandwidth.
+            <a href="https://go.microsoft.com/fwlink/?linkid=525722#send-metrics">Learn more</a>
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.MetricManager.sdkVersionPropertyValue">
+            <summary>
+            Value of the property indicating 'app insights version' allowing to tell metric was built using metric manager.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.MetricManager.aggregationPeriod">
+            <summary>
+            Reporting frequency.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.MetricManager.telemetryClient">
+            <summary>
+            Telemetry client used to track resulting aggregated metrics.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.MetricManager.telemetryConfig">
+            <summary>
+            Telemetry config for this telemetry client.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.MetricManager.snapshotTimer">
+            <summary>
+            Metric aggregation snapshot task.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.MetricManager.lastSnapshotStartDateTime">
+            <summary>
+            Last time snapshot was initiated.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.MetricManager.metricDictionary">
+            <summary>
+            A dictionary of all metrics instantiated via this manager.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.MetricManager.#ctor(Microsoft.ApplicationInsights.TelemetryClient,Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.ApplicationInsights.WindowsServer.MetricManager"/> class.
+            </summary>
+            <param name="client">Telemetry client to use to output aggregated metric data.</param>
+            <param name="config">Telemetry configuration for the telemetry client.</param>
+        </member>
+        <member name="P:Microsoft.ApplicationInsights.WindowsServer.MetricManager.MetricProcessors">
+            <summary>
+            Gets a list of metric processors associated
+            with this instance of <see cref="T:Microsoft.ApplicationInsights.WindowsServer.MetricManager"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.MetricManager.CreateMetric(System.String,System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Creates metric.
+            </summary>
+            <param name="name">Name of the metric.</param>
+            <param name="dimensions">Optional dimensions.</param>
+            <returns>Metric instance.</returns>
+            <remarks>
+            <a href="https://go.microsoft.com/fwlink/?linkid=525722#send-metrics">Learn more</a>
+            </remarks>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.MetricManager.Flush">
+            <summary>
+            Flushes the in-memory aggregation buffers. Not normally required - occurs automatically at intervals and on Dispose.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.MetricManager.Dispose">
+            <summary>
+            Disposes the object.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.MetricManager.GetWaitTime">
+            <summary>
+            Calculates wait time until next snapshot of the aggregators.
+            </summary>
+            <returns>Wait time.</returns>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.MetricManager.CreateAggregatedMetricTelemetry(Microsoft.ApplicationInsights.WindowsServer.Metric,Microsoft.ApplicationInsights.WindowsServer.SimpleMetricStatisticsAggregator)">
+            <summary>
+            Generates telemetry object based on the metric aggregator.
+            </summary>
+            <param name="metric">Metric definition.</param>
+            <param name="statistics">Metric aggregator statistics calculated for a period of time.</param>
+            <returns>Metric telemetry object resulting from aggregation.</returns>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.MetricManager.SnapshotAndReschedule">
+            <summary>
+            Takes a snapshot of aggregators collected by this instance of the manager
+            and schedules the next snapshot.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.MetricManager.Snapshot">
+            <summary>
+            Takes snapshot of all active metric aggregators and turns results into metric telemetry.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.WindowsServer.SimpleMetricStatisticsAggregator">
+            <summary>
+            Represents mechanism to calculate basic statistical parameters of a series of numeric values.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.SimpleMetricStatisticsAggregator.trackLock">
+            <summary>
+            Lock to make Track() method thread-safe.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.SimpleMetricStatisticsAggregator.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.ApplicationInsights.WindowsServer.SimpleMetricStatisticsAggregator"/> class.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ApplicationInsights.WindowsServer.SimpleMetricStatisticsAggregator.Count">
+            <summary>
+            Gets sample count.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ApplicationInsights.WindowsServer.SimpleMetricStatisticsAggregator.Sum">
+            <summary>
+            Gets sum of the samples.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ApplicationInsights.WindowsServer.SimpleMetricStatisticsAggregator.SumOfSquares">
+            <summary>
+            Gets sum of squares of the samples.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ApplicationInsights.WindowsServer.SimpleMetricStatisticsAggregator.Min">
+            <summary>
+            Gets minimum sample value.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ApplicationInsights.WindowsServer.SimpleMetricStatisticsAggregator.Max">
+            <summary>
+            Gets maximum sample value.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ApplicationInsights.WindowsServer.SimpleMetricStatisticsAggregator.Average">
+            <summary>
+            Gets arithmetic average value in the population.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ApplicationInsights.WindowsServer.SimpleMetricStatisticsAggregator.Variance">
+            <summary>
+            Gets variance of the values in the population.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ApplicationInsights.WindowsServer.SimpleMetricStatisticsAggregator.StandardDeviation">
+            <summary>
+            Gets standard deviation of the values in the population.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.SimpleMetricStatisticsAggregator.Track(System.Double)">
+            <summary>
+            Adds a value to the time series.
+            </summary>
+            <param name="value">Metric value.</param>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.WindowsServer.Metric">
+            <summary>
+            Represents aggregator for a single time series of a given metric.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.Metric.manager">
+            <summary>
+            Aggregator manager for the aggregator.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.Metric.aggregatorId">
+            <summary>
+            Metric aggregator id to look for in the aggregator dictionary.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.Metric.hashCode">
+            <summary>
+            Aggregator hash code.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Metric.#ctor(Microsoft.ApplicationInsights.WindowsServer.MetricManager,System.String,System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.ApplicationInsights.WindowsServer.Metric"/> class.
+            </summary>
+            <param name="manager">Aggregator manager handling this instance.</param>
+            <param name="name">Metric name.</param>
+            <param name="dimensions">Metric dimensions.</param>
+        </member>
+        <member name="P:Microsoft.ApplicationInsights.WindowsServer.Metric.Name">
+            <summary>
+            Gets metric name.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ApplicationInsights.WindowsServer.Metric.Dimensions">
+            <summary>
+            Gets a set of metric dimensions and their values.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Metric.Track(System.Double)">
+            <summary>
+            Adds a value to the time series.
+            </summary>
+            <param name="value">Metric value.</param>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Metric.GetHashCode">
+            <summary>
+            Returns the hash code for this object.
+            </summary>
+            <returns>A 32-bit signed integer hash code.</returns>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Metric.Equals(Microsoft.ApplicationInsights.WindowsServer.Metric)">
+            <summary>
+            Determines whether the specified object is equal to the current object.
+            </summary>
+            <param name="other">The object to compare with the current object. </param>
+            <returns>True if the specified object is equal to the current object; otherwise, false.</returns>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Metric.Equals(System.Object)">
+            <summary>
+            Determines whether the specified object is equal to the current object.
+            </summary>
+            <param name="obj">The object to compare with the current object. </param>
+            <returns>True if the specified object is equal to the current object; otherwise, false.</returns>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Metric.GetAggregatorId(System.String,System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Generates id of the aggregator serving time series specified in the parameters.
+            </summary>
+            <param name="name">Metric name.</param>
+            <param name="dimensions">Optional metric dimensions.</param>
+            <returns>Aggregator id that can be used to get aggregator.</returns>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.Metric.ForwardToProcessors(System.Double)">
+            <summary>
+            Forwards value to metric processors.
+            </summary>
+            <param name="value">Value tracked on time series.</param>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.WindowsServer.TaskTimerInternal">
+            <summary>
+            Runs a task after a certain delay and log any error.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.TaskTimerInternal.InfiniteTimeSpan">
+            <summary>
+            Represents an infinite time span.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ApplicationInsights.WindowsServer.TaskTimerInternal.Delay">
+            <summary>
+            Gets or sets the delay before the task starts. 
+            </summary>
+        </member>
+        <member name="P:Microsoft.ApplicationInsights.WindowsServer.TaskTimerInternal.IsStarted">
+            <summary>
+            Gets a value indicating whether value that indicates if a task has already started.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.TaskTimerInternal.Start(System.Func{System.Threading.Tasks.Task})">
+            <summary>
+            Start the task.
+            </summary>
+            <param name="elapsed">The task to run.</param>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.TaskTimerInternal.Cancel">
+            <summary>
+            Cancels the current task.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.TaskTimerInternal.Dispose">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.TaskTimerInternal.LogException(System.Exception)">
+            <summary>
+            Log exception thrown by outer code.
+            </summary>
+            <param name="exception">Exception to log.</param>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.WindowsServerCoreEventSource.OperationIsNullWarning(System.String)">
+            <summary>
+            Logs the information when there operation to track is null.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.WindowsServerCoreEventSource.InvalidOperationToStopError(System.String)">
+            <summary>
+            Logs the information when there operation to stop does not match the current operation.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.WindowsServer.WindowsServerCoreEventSource.Keywords">
+            <summary>
+            Keywords for the PlatformEventSource.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.WindowsServerCoreEventSource.Keywords.UserActionable">
+            <summary>
+            Key word for user actionable events.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.WindowsServerCoreEventSource.Keywords.Diagnostics">
+            <summary>
+            Keyword for errors that trace at Verbose level.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.WindowsServerCoreEventSource.Keywords.VerboseFailure">
+            <summary>
+            Keyword for errors that trace at Verbose level.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.WindowsServerCoreEventSource.Keywords.ErrorFailure">
+            <summary>
+            Keyword for errors that trace at Error level.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.WindowsServer.UnhandledExceptionTelemetryModule">
+            <summary>
+            The module subscribed to AppDomain.CurrentDomain.UnhandledException to send exceptions to ApplicationInsights.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.UnhandledExceptionTelemetryModule.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.ApplicationInsights.WindowsServer.UnhandledExceptionTelemetryModule"/> class.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.UnhandledExceptionTelemetryModule.Initialize(Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration)">
+            <summary>
+            Initializes the telemetry module.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.UnhandledExceptionTelemetryModule.Dispose">
+            <summary>
+            Disposing UnhandledExceptionTelemetryModule instance.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.WindowsServer.AzureInstanceMetadataTelemetryModule">
+            <summary>
+            A telemetry module that adds Azure instance metadata context information to the heartbeat, if it is available.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.AzureInstanceMetadataTelemetryModule.Initialize(Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.ApplicationInsights.WindowsServer.AzureInstanceMetadataTelemetryModule" /> class.
+            Creates a heartbeat property collector that obtains and inserts data from the Azure Instance
+            Metadata service if it is present and available to the currently running process. If it is not
+            present no added IMS data is added to the heartbeat.
+            </summary>
+            <param name="unused">Unused parameter for this TelemetryModule.</param>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.WindowsServer.AzureWebAppRoleEnvironmentTelemetryInitializer">
+            <summary>
+            A telemetry initializer that will gather Azure Web App Role Environment context information.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.AzureWebAppRoleEnvironmentTelemetryInitializer.WebAppHostNameEnvironmentVariable">
+            <summary>
+            Azure Web App Hostname. This will include the deployment slot, but will be 
+            same across instances of same slot. Marked as internal to support testing.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.AzureWebAppRoleEnvironmentTelemetryInitializer.WebAppSuffix">
+            <summary>Predefined suffix for Azure Web App Hostname.</summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.AzureWebAppRoleEnvironmentTelemetryInitializer.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.ApplicationInsights.WindowsServer.AzureWebAppRoleEnvironmentTelemetryInitializer" /> class.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.AzureWebAppRoleEnvironmentTelemetryInitializer.Initialize(Microsoft.ApplicationInsights.Channel.ITelemetry)">
+            <summary>
+            Initializes <see cref="T:Microsoft.ApplicationInsights.Channel.ITelemetry" /> role and node context information.
+            </summary>
+            <param name="telemetry">The telemetry to initialize.</param>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.AzureWebAppRoleEnvironmentTelemetryInitializer.Dispose">
+            <summary>
+            Remove our event handler from the environment variable monitor.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.WindowsServer.BuildInfoConfigComponentVersionTelemetryInitializer">
+            <summary>
+            A telemetry context initializer that will set component context version on the base of BuildInfo.config information.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.BuildInfoConfigComponentVersionTelemetryInitializer.version">
+            <summary>
+            The version for this component.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.BuildInfoConfigComponentVersionTelemetryInitializer.Initialize(Microsoft.ApplicationInsights.Channel.ITelemetry)">
+            <summary>
+            Initializes version of the telemetry item with the version obtained from build info if it is available.
+            </summary>
+            <param name="telemetry">The telemetry context to initialize.</param>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.BuildInfoConfigComponentVersionTelemetryInitializer.LoadBuildInfoConfig">
+            <summary>
+            Loads BuildInfo.config and returns XElement.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.BuildInfoConfigComponentVersionTelemetryInitializer.GetVersion">
+            <summary>
+            Gets the version for the current application. If the version cannot be found, we will return the passed in default.
+            </summary>
+            <returns>The extracted data.</returns>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.WindowsServer.DeveloperModeWithDebuggerAttachedTelemetryModule">
+            <summary>
+            Telemetry module that sets developer mode to true when is not already set AND managed debugger is attached.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.DeveloperModeWithDebuggerAttachedTelemetryModule.IsDebuggerAttached">
+            <summary>
+            Function that checks whether debugger is attached with implementation that can be replaced by unit test code.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.DeveloperModeWithDebuggerAttachedTelemetryModule.Initialize(Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration)">
+            <summary>
+            Gives the opportunity for this telemetry module to initialize configuration object that is passed to it.
+            </summary>
+            <param name="configuration">Configuration object.</param>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.WindowsServer.DomainNameRoleInstanceTelemetryInitializer">
+            <summary>
+            Obsolete. A telemetry context initializer that used to populate role instance name. Preserved for backward compatibility. 
+            Note that role instance will still be populated with the machine name as in the previous versions.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.DomainNameRoleInstanceTelemetryInitializer.Initialize(Microsoft.ApplicationInsights.Channel.ITelemetry)">
+            <summary>
+            Obsolete method.
+            </summary>
+            <param name="telemetry">The telemetry to initialize.</param>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.WindowsServer.AppServicesHeartbeatTelemetryModule">
+            <summary>
+            Provides default values for the heartbeat feature of Application Insights that
+            are specific to Azure App Services (Web Apps, Functions, etc...).
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.WindowsServer.AppServicesHeartbeatTelemetryModule.WebHeartbeatPropertyNameEnvVarMap">
+            <summary>
+            Environment variables and the Application Insights heartbeat field names that accompany them.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.AppServicesHeartbeatTelemetryModule.#ctor">
+            <summary>
+            Initializes a new instance of the<see cref="T:Microsoft.ApplicationInsights.WindowsServer.AppServicesHeartbeatTelemetryModule" /> class.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.AppServicesHeartbeatTelemetryModule.#ctor(Microsoft.ApplicationInsights.Extensibility.Implementation.Tracing.IHeartbeatPropertyManager)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.ApplicationInsights.WindowsServer.AppServicesHeartbeatTelemetryModule" /> class. This is
+            internal, and allows for overriding the Heartbeat Property Manager to test this module with.
+            </summary>
+            <param name="hbeatPropManager">The heartbeat property manager to use when setting/updating env var values.</param>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.AppServicesHeartbeatTelemetryModule.Initialize(Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration)">
+            <summary>
+            Initialize the default heartbeat provider for Azure App Services. This module
+            looks for specific environment variables and sets them into the heartbeat 
+            properties for Application Insights, if they exist.
+            </summary>
+            <param name="configuration">Unused parameter.</param>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.AppServicesHeartbeatTelemetryModule.UpdateHeartbeatWithAppServiceEnvVarValues">
+            <summary>
+            Signal the AppServicesHeartbeatTelemetryModule to update the values of the 
+            Environment variables we use in our heartbeat payload.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.AppServicesHeartbeatTelemetryModule.Dispose">
+            <summary>
+            Remove our event handler from the environment variable monitor.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.WindowsServer.UnobservedExceptionTelemetryModule">
+            <summary>
+            The module subscribed to TaskScheduler.UnobservedTaskException to send exceptions to ApplicationInsights.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.UnobservedExceptionTelemetryModule.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.ApplicationInsights.WindowsServer.UnobservedExceptionTelemetryModule" /> class.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.UnobservedExceptionTelemetryModule.Initialize(Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration)">
+            <summary>
+            Initializes the telemetry module.
+            </summary>
+            <param name="configuration">Telemetry Configuration used for creating TelemetryClient for sending exceptions to ApplicationInsights.</param>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.WindowsServer.UnobservedExceptionTelemetryModule.Dispose">
+            <summary>
+            Disposing TaskSchedulerOnUnobservedTaskException instance.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.Common.AppMapCorrelationEventSource">
+            <summary>
+            ETW EventSource tracing class.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.Common.AppMapCorrelationEventSource.Keywords">
+            <summary>
+            Keywords for the <see cref="T:Microsoft.ApplicationInsights.Common.AppMapCorrelationEventSource"/>.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.Common.AppMapCorrelationEventSource.Keywords.UserActionable">
+            <summary>
+            Key word for user actionable events.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.Common.AppMapCorrelationEventSource.Keywords.Diagnostics">
+            <summary>
+            Key word for diagnostics events.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.Common.ArrayExtensions.Empty``1">
+            <summary>
+            Returns an empty array.
+            </summary>
+            <remarks>
+            Array.Empty() was added to Net Framework in 4.6
+            This adds support for Net45.
+            </remarks>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.Common.ArrayExtensions.EmptyArray`1">
+            <summary>
+            [Net45 Only] Copied from Net Framework (https://referencesource.microsoft.com/#mscorlib/system/array.cs,bc9fd1be0e4f4e70,references).
+            </summary>
+            <remarks>
+            Array.Empty() was added to Net Framework in 4.6
+            This adds support for Net45.
+            </remarks>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.Common.ConditionalWeakTableExtensions">
+            <summary>
+            Extension methods for the ConditionalWeakTable class.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.Common.ConditionalWeakTableExtensions.AddIfNotExists``2(System.Runtime.CompilerServices.ConditionalWeakTable{``0,``1},``0,``1)">
+            <summary>
+            Check if a key exists before adding the key/value pair.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.Common.ExceptionUtilities">
+            <summary>
+            Utility functions for dealing with exceptions.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.Common.ExceptionUtilities.GetExceptionDetailString(System.Exception)">
+            <summary>
+            Get the string representation of this Exception with special handling for AggregateExceptions.
+            </summary>
+            <param name="ex">The exception to convert to a string.</param>
+            <returns>The detailed string version of the provided exception.</returns>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.Common.HeadersUtilities">
+            <summary>
+            Generic functions that can be used to get and set Http headers.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.Common.HeadersUtilities.GetHeaderKeyValue(System.Collections.Generic.IEnumerable{System.String},System.String)">
+            <summary>
+            Get the key value from the provided HttpHeader value that is set up as a comma-separated list of key value pairs. Each key value pair is formatted like (key)=(value).
+            </summary>
+            <param name="headerValues">The header values that may contain key name/value pairs.</param>
+            <param name="keyName">The name of the key value to find in the provided header values.</param>
+            <returns>The first key value, if it is found. If it is not found, then null.</returns>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.Common.HeadersUtilities.UpdateHeaderWithKeyValue(System.Collections.Generic.IEnumerable{System.String},System.String,System.String)">
+            <summary>
+            Given the provided list of header value strings, return a list of key name/value pairs
+            with the provided keyName and keyValue. If the initial header value strings contains
+            the key name, then the original key value should be replaced with the provided key
+            value. If the initial header value strings don't contain the key name, then the key
+            name/value pair should be added to the list and returned.
+            </summary>
+            <param name="headerValues">The existing header values that the key/value pair should be added to.</param>
+            <param name="keyName">The name of the key to add.</param>
+            <param name="keyValue">The value of the key to add.</param>
+            <returns>The result of setting the provided key name/value pair into the provided headerValues.</returns>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.Common.HeadersUtilities.SanitizeString(System.String)">
+            <summary>
+            Http Headers only allow Printable US-ASCII characters.
+            Remove all other characters.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.Common.InjectionGuardConstants">
+            <summary>
+            These values are listed to guard against malicious injections by limiting the max size allowed in an HTTP Response.
+            These max limits are intentionally exaggerated to allow for unexpected responses, while still guarding against unreasonably large responses.
+            Example: While a 32 character response may be expected, 50 characters may be permitted while a 10,000 character response would be unreasonable and malicious.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.Common.InjectionGuardConstants.AppIdMaxLength">
+            <summary>
+            Max length of AppId allowed in response from Breeze.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.Common.InjectionGuardConstants.RequestHeaderMaxLength">
+            <summary>
+            Max length of incoming Request Header value allowed.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.Common.InjectionGuardConstants.ContextHeaderKeyMaxLength">
+            <summary>
+            Max length of context header key.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.Common.InjectionGuardConstants.ContextHeaderValueMaxLength">
+            <summary>
+            Max length of context header value.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.Common.InjectionGuardConstants.TraceParentHeaderMaxLength">
+            <summary>
+            Max length of traceparent header value.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.Common.InjectionGuardConstants.TraceStateHeaderMaxLength">
+            <summary>
+            Max length of tracestate header value string.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.Common.InjectionGuardConstants.TraceStateMaxPairs">
+            <summary>
+            Max number of key value pairs in the tracestate header.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.Common.PropertyFetcher">
+            <summary>
+            Efficient implementation of fetching properties of anonymous types with reflection.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.Common.PropertyFetcher.PropertyFetch.FetcherForProperty(System.Reflection.PropertyInfo)">
+            <summary>
+            Create a property fetcher from a .NET Reflection PropertyInfo class that
+            represents a property of a particular type.  
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.Common.PropertyFetcher.PropertyFetch.Fetch(System.Object)">
+            <summary>
+            Given an object, fetch the property that this propertyFetch represents. 
+            </summary>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.Common.RequestResponseHeaders">
+            <summary>
+            Header names for requests / responses.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.Common.RequestResponseHeaders.RequestContextHeader">
+            <summary>
+            Request-Context header.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.Common.RequestResponseHeaders.RequestContextCorrelationSourceKey">
+            <summary>
+            Source key in the request context header that is added by an application while making http requests and retrieved by the other application when processing incoming requests.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.Common.RequestResponseHeaders.RequestContextCorrelationTargetKey">
+            <summary>
+            Target key in the request context header that is added to the response and retrieved by the calling application when processing incoming responses.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.Common.RequestResponseHeaders.StandardParentIdHeader">
+            <summary>
+            Legacy parent Id header.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.Common.RequestResponseHeaders.StandardRootIdHeader">
+            <summary>
+            Legacy root id header.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.Common.RequestResponseHeaders.RequestIdHeader">
+            <summary>
+            Standard Request-Id Id header.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.Common.RequestResponseHeaders.CorrelationContextHeader">
+            <summary>
+            Standard Correlation-Context header.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.Common.RequestResponseHeaders.AccessControlExposeHeadersHeader">
+            <summary>
+            Access-Control-Expose-Headers header indicates which headers can be exposed as part of the response by listing their names.
+            Should contain Request-Context value that will allow reading Request-Context in JavaScript SDK on Browser side.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.Common.StringUtilities">
+            <summary>
+            Generic functions to perform common operations on a string.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.Common.StringUtilities.EnforceMaxLength(System.String,System.Int32)">
+            <summary>
+            Check a strings length and trim to a max length if needed.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.Common.StringUtilities.GenerateTraceId">
+            <summary>
+            Generates random trace Id as per W3C Distributed tracing specification.
+            https://github.com/w3c/distributed-tracing/blob/master/trace_context/HTTP_HEADER_FORMAT.md#trace-id
+            </summary>
+            <returns>Random 16 bytes array encoded as hex string</returns>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.Common.StringUtilities.GenerateSpanId">
+            <summary>
+            Generates random span Id as per W3C Distributed tracing specification.
+            https://github.com/w3c/distributed-tracing/blob/master/trace_context/HTTP_HEADER_FORMAT.md#span-id
+            </summary>
+            <returns>Random 8 bytes array encoded as hex string</returns>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.Common.StringUtilities.FormatRequestId(System.String,System.String)">
+            <summary>
+            Formats trace Id and span Id into valid Request-Id: |trace.span.
+            </summary>
+            <param name="traceId">Trace Id.</param>
+            <param name="spanId">Span id.</param>
+            <returns>valid Request-Id.</returns>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.Common.StringUtilities.GetRootId(System.String)">
+            <summary>
+            Gets root id (string between '|' and the first dot) from the hierarchical Id.
+            </summary>
+            <param name="hierarchicalId">Id to extract root from.</param>
+            <returns>Root operation id.</returns>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.Common.StringUtilities.GenerateId(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Converts byte array to hex lower case string.
+            </summary>
+            <returns>Array encoded as hex string</returns>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.Common.WebHeaderCollectionExtensions">
+            <summary>
+            WebHeaderCollection extension methods.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.Common.WebHeaderCollectionExtensions.GetNameValueHeaderValue(System.Collections.Specialized.NameValueCollection,System.String,System.String)">
+            <summary>
+            For the given header collection, for a given header of name-value type, find the value of a particular key.
+            </summary>
+            <param name="headers">Header collection.</param>
+            <param name="headerName">Name of the header in the collection.</param>
+            <param name="keyName">Desired key of the key-value list.</param>
+            <returns>Value against the given parameters.</returns>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.Common.WebHeaderCollectionExtensions.GetNameValueCollectionFromHeader(System.Collections.Specialized.NameValueCollection,System.String)">
+            <summary>
+            For the given header collection, for a given header of name-value type, return list of KeyValuePairs.
+            </summary>
+            <param name="headers">Header collection.</param>
+            <param name="headerName">Name of the header in the collection.</param>
+            <returns>List of KeyValuePairs in the given header.</returns>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.Common.WebHeaderCollectionExtensions.SetNameValueHeaderValue(System.Collections.Specialized.NameValueCollection,System.String,System.String,System.String)">
+            <summary>
+            For the given header collection, adds KeyValuePair to header.
+            </summary>
+            <param name="headers">Header collection.</param>
+            <param name="headerName">Name of the header that is to contain the name-value pair.</param>
+            <param name="keyName">Name in the name value pair.</param>
+            <param name="value">Value in the name value pair.</param>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.Common.WebHeaderCollectionExtensions.SetHeaderFromNameValueCollection(System.Collections.Specialized.NameValueCollection,System.String,System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.String}})">
+            <summary>
+            For the given header collection, sets the header value based on the name value format.
+            </summary>
+            <param name="headers">Header collection.</param>
+            <param name="headerName">Name of the header that is to contain the name-value pair.</param>
+            <param name="keyValuePairs">List of KeyValuePairs to format into header.</param>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.Common.WebHeaderCollectionExtensions.GetHeaderValue(System.Collections.Specialized.NameValueCollection,System.String,System.Int32,System.Int32)">
+            <summary>
+            For the given header collection, for a given header name, returns collection of header values.
+            </summary>
+            <param name="headers">Header collection.</param>
+            <param name="headerName">Name of the header in the collection.</param>
+            <param name="maxStringLength">Maximum allowed header length</param>
+            <param name="maxItems">Maximum allowed number comma separated values in the header</param>
+            <returns>List of comma separated values in the given header.</returns>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.W3C.W3CActivityExtensions">
+            <summary>
+            Extends Activity to support W3C distributed tracing standard.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.W3C.W3CActivityExtensions.GenerateW3CContext(System.Diagnostics.Activity)">
+            <summary>
+            Generate new W3C context.
+            </summary>
+            <param name="activity">Activity to generate W3C context on.</param>
+            <returns>The same Activity for chaining.</returns>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.W3C.W3CActivityExtensions.IsW3CActivity(System.Diagnostics.Activity)">
+            <summary>
+            Checks if current Actuvuty has W3C properties on it.
+            </summary>
+            <param name="activity">Activity to check.</param>
+            <returns>True if Activity has W3C properties, false otherwise.</returns>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.W3C.W3CActivityExtensions.UpdateContextOnActivity(System.Diagnostics.Activity)">
+            <summary>
+            Updates context on the Activity based on the W3C Context in the parent Activity tree.
+            </summary>
+            <param name="activity">Activity to update W3C context on.</param>
+            <returns>The same Activity for chaining.</returns>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.W3C.W3CActivityExtensions.GetTraceparent(System.Diagnostics.Activity)">
+            <summary>
+            Gets traceparent header value for the Activity or null if there is no W3C context on it.
+            </summary>
+            <param name="activity">Activity to read W3C context from.</param>
+            <returns>traceparent header value.</returns>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.W3C.W3CActivityExtensions.SetTraceparent(System.Diagnostics.Activity,System.String)">
+            <summary>
+            Initializes W3C context on the Activity from traceparent header value.
+            </summary>
+            <param name="activity">Activity to set W3C context on.</param>
+            <param name="value">Valid traceparent header like 00-0af7651916cd43dd8448eb211c80319c-b9c7c989f97918e1-01.</param>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.W3C.W3CActivityExtensions.GetTracestate(System.Diagnostics.Activity)">
+            <summary>
+            Gets tracestate header value from the Activity.
+            </summary>
+            <param name="activity">Activity to get tracestate from.</param>
+            <returns>tracestate header value.</returns>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.W3C.W3CActivityExtensions.SetTracestate(System.Diagnostics.Activity,System.String)">
+            <summary>
+            Sets tracestate header value on the Activity.
+            </summary>
+            <param name="activity">Activity to set tracestate on.</param>
+            <param name="value">tracestate header value.</param>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.W3C.W3CActivityExtensions.GetTraceId(System.Diagnostics.Activity)">
+            <summary>
+            Gets TraceId from the Activity.
+            Use carefully: if may cause iteration over all tags!
+            </summary>
+            <param name="activity">Activity to get traceId from.</param>
+            <returns>TraceId value or null if it does not exist.</returns>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.W3C.W3CActivityExtensions.GetSpanId(System.Diagnostics.Activity)">
+            <summary>
+            Gets SpanId from the Activity.
+            Use carefully: if may cause iteration over all tags!
+            </summary>
+            <param name="activity">Activity to get spanId from.</param>
+            <returns>SpanId value or null if it does not exist.</returns>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.W3C.W3CActivityExtensions.GetParentSpanId(System.Diagnostics.Activity)">
+            <summary>
+            Gets ParentSpanId from the Activity.
+            Use carefully: if may cause iteration over all tags!
+            </summary>
+            <param name="activity">Activity to get ParentSpanId from.</param>
+            <returns>ParentSpanId value or null if it does not exist.</returns>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.W3C.W3CConstants">
+            <summary>
+            W3C constants.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.W3C.W3CConstants.TraceParentHeader">
+            <summary>
+            W3C traceparent header name.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.W3C.W3CConstants.TraceStateHeader">
+            <summary>
+            W3C tracestate header name.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.W3C.W3CConstants.ApplicationIdTraceStateField">
+            <summary>
+            Name of the field that carry ApplicationInsights application Id in the tracestate header under az key.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.W3C.W3CConstants.AzureTracestateNamespace">
+            <summary>
+            Name of the field that carry Azure-specific states in the tracestate header.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.W3C.W3CConstants.TracestateAzureSeparator">
+            <summary>
+            Separator between Azure namespace values.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.W3C.W3CConstants.TraceIdTag">
+            <summary>
+            Trace-Id tag name.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.W3C.W3CConstants.SpanIdTag">
+            <summary>
+            Span-Id tag name.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.W3C.W3CConstants.ParentSpanIdTag">
+            <summary>
+            Parent span-Id tag name.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.W3C.W3CConstants.VersionTag">
+            <summary>
+            Version tag name.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.W3C.W3CConstants.SampledTag">
+            <summary>
+            Sampled tag name.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.W3C.W3CConstants.TracestateTag">
+            <summary>
+            Tracestate tag name.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.W3C.W3CConstants.DefaultVersion">
+            <summary>
+            Default version value.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.W3C.W3CConstants.TraceFlagRecordedAndNotRequested">
+            <summary>
+            Default sampled flag value: may be recorded, not requested
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.W3C.W3CConstants.TraceFlagRecordedAndRequested">
+            <summary>
+            Recorded and requested sampled flag value
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.W3C.W3CConstants.RequestedTraceFlag">
+            <summary>
+            Requested trace flag
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.W3C.W3CConstants.LegacyRootIdProperty">
+            <summary>
+            Legacy root Id tag name.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ApplicationInsights.W3C.W3CConstants.LegacyRequestIdProperty">
+            <summary>
+            Legacy root Id tag name.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ApplicationInsights.W3C.W3COperationCorrelationTelemetryInitializer">
+            <summary>
+            Telemetry Initializer that sets correlation ids for W3C.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ApplicationInsights.W3C.W3COperationCorrelationTelemetryInitializer.Initialize(Microsoft.ApplicationInsights.Channel.ITelemetry)">
+            <summary>
+            Initializes telemety item.
+            </summary>
+            <param name="telemetry">Telemetry item.</param>
+        </member>
+    </members>
+</doc>
