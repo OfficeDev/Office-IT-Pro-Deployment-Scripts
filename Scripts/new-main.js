@@ -10,9 +10,9 @@ var Office2016Versions;
 $(document).ready(function () {
     var finput = document.getElementById('fileInput');
     finput.addEventListener('change', function (e) {
-        var hWCheck = $.cookie("hideWelcome1");
+        var hWCheck = $.cookie("hideWelcome2");
         if (!(hWCheck)) {
-            setCookie("hideWelcome1", true, 1);
+            setCookie("hideWelcome2", true, 1);
         }
         fileUploaded(e);
     });
@@ -22,7 +22,7 @@ $(document).ready(function () {
         document.getElementById("txtTargetVersion").style.lineHeight = "0px";
     }
 
-    var hW = $.cookie("hideWelcome1");
+    var hW = $.cookie("hideWelcome2");
     if (hW) {
         $("#welcomeDialog").hide();
         fadeBackground(false);
@@ -3363,7 +3363,7 @@ function foreverHideWelcome() {
     $("#welcomeDialog").fadeOut(function () {
         fadeBackground(false);
     });
-    $.cookie("hideWelcome1", true);
+    $.cookie("hideWelcome2", true);
 }
 
 function openCommentDialog() {
