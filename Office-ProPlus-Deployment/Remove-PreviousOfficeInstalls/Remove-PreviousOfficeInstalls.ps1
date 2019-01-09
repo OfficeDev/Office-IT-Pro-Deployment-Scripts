@@ -1314,17 +1314,22 @@ Function IsDotSourced() {
 }
 
 Function GetScriptRoot() {
- process {
-     [string]$scriptPath = "."
+    process {
+        [string]$scriptPath = "."
+        if ($PSScriptRoot -or $MyInvocation.ScriptName) {
+            if ($MyInvocation.ScriptName) {
+                $scriptPath = $MyInvocation.ScriptName | Split-Path
+            }
+            if ($PSScriptRoot) {
+                $scriptPath = $PSScriptRoot
+            }
+        }
+        else {
+            $scriptPath = (Get-Item -Path ".\").FullName
+        }
 
-     if ($PSScriptRoot) {
-       $scriptPath = $PSScriptRoot
-     } else {
-       $scriptPath = (Get-Item -Path ".\").FullName
-     }
-
-     return $scriptPath
- }
+        return $scriptPath
+    }
 }
 
 function GetProductName {
