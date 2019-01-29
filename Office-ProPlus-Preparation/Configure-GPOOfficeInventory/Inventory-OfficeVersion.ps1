@@ -24,7 +24,7 @@ Description:
 Will return the locally installed Office product
 
 .EXAMPLE
-Get-OfficeVersion
+Get-LocalOfficeVersion
 
 Description:
 Will return the locally installed Office product
@@ -56,7 +56,7 @@ begin {
 
     $defaultDisplaySet = 'DisplayName','Version', 'ComputerName'
 
-    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
+    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet('DefaultDisplayPropertySet',[string[]]$defaultDisplaySet)
     $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
 }
 
