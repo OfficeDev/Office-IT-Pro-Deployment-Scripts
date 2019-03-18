@@ -602,12 +602,16 @@ Sub ShowSyntax
              SCRIPTFILE & " - Remove " & ONAME & vbCrLf & _
              "when a regular uninstall is no longer possible" & vbCrLf & vbCrLf & _
              "Usage:" & vbTab & SCRIPTFILE & vbCrLf & vbCrLf & _
-             vbTab & "/?                          ' Displays this help"& vbCrLf & _
+	     vbTab & "ALL                         ' Remove all products and features" & vbCrLf & _
+             vbTab & "/?                          ' Displays this help" & vbCrLf & _
              vbTab & "/Log [LogfolderPath]        ' Custom folder for log files" & vbCrLf & _
              vbTab & "/SkipSD                     ' Skips the ShortcutDetection in local profiles" & vbCrLf & _
-             vbTab & "/NoCancel                   ' Setup.exe and Msiexec.exe have no Cancel button" & vbCrLf &_
-             vbTab & "/Quiet                      ' Script, Setup.exe and Msiexec.exe run quiet with no UI" & vbCrLf &_
-             vbTab & "/ReturnErorOrSuccess        ' Returns 0 for a successful removal. Non-Zero if not." & vbCrLf
+             vbTab & "/NoCancel                   ' Setup.exe and Msiexec.exe have no Cancel button" & vbCrLf & _
+             vbTab & "/Quiet                      ' Script, Setup.exe and Msiexec.exe run quiet with no UI" & vbCrLf & _
+             vbTab & "/ReturnErrorOrSuccess       ' Returns 0 for a successful removal. Non-Zero if not." & vbCrLf & _
+	     vbTab & "/NE                         ' No-elevation of uninstall process" & vbCrLf & _
+	     vbTab & "/OSE                        ' Remove OSE" & vbCrLf & _
+	     vbTab & "/TR                         ' Test re-run" & vbCrLf
     Wscript.Quit
 End Sub 'ShowSyntax
 
