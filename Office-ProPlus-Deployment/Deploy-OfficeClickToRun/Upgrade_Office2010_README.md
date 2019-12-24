@@ -37,7 +37,7 @@ This script is meant to be a template for upgrading existing Office installation
 Office 2010 products will be removed using the offscrub scripts and when all products are removed Office 365 ProPlus will be installed using the configuration.xml.  
 
 1. Right click on **.\10-ExampleRemovePreviousAndUpgrade.ps1** and click Edit. PowerShell ISE will open that will allow us to make changes to the script.  
-2. Make any necessary changes to fit your deployment. For example, if you are deploying the Current channel replace the vairable **-Channel Deferred** with **-Channel Current**.  
+2. Make any necessary changes to fit your deployment. For example, if you are deploying the Current channel replace the variable **-Channel Deferred** with **-Channel Current**.  
 3. After you've modified the script to fit your Office installation requirements **save** and **close** the script.  
 4. From the PowerShell console type **.\10-ExampleRemovePreviousAndUpgrade.ps1** and press **Enter**.  
 
